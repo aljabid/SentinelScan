@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelScan Security Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 2rem 0 1rem; border-bottom: 1px solid #1e293b; margin-bottom: 2rem; }
+  .logo { font-size: 1.5rem; font-weight: 700; color: #38bdf8; letter-spacing: 2px; }
+  .meta { font-size: 0.8rem; color: #64748b; }
+  .summary-grid { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .card { background: #1e293b; border-radius: 8px; padding: 1.2rem 1.5rem; min-width: 120px; flex: 1; }
+  .card-count { font-size: 2rem; font-weight: 700; }
+  .card-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
+  .target-block { background: #1e293b; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; }
+  .target-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+  .target-name { font-size: 1.2rem; font-weight: 600; color: #f1f5f9; }
+  .target-meta { font-size: 0.8rem; color: #94a3b8; margin-top: 0.3rem; display: flex; gap: 1rem; }
+  .grade-badge { font-size: 2.5rem; font-weight: 700; border: 3px solid; border-radius: 8px; padding: 0.3rem 0.8rem; line-height: 1; }
+  .module-block { background: #0f172a; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; }
+  .module-header { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; background: #162032; border-bottom: 1px solid #1e293b; }
+  .module-name { font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; color: #7dd3fc; flex: 1; }
+  .module-time { font-size: 0.75rem; color: #475569; }
+  .module-count { font-size: 0.75rem; color: #64748b; background: #1e293b; padding: 2px 8px; border-radius: 12px; }
+  .module-findings { padding: 0.8rem 1rem; }
+  .finding { background: #1e293b; border-radius: 6px; padding: 0.8rem 1rem; margin-bottom: 0.6rem; }
+  .finding-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+  .badge { font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; color: #fff; letter-spacing: 0.5px; }
+  .finding-title { font-weight: 600; font-size: 0.9rem; }
+  .finding-desc { font-size: 0.82rem; color: #94a3b8; margin-bottom: 0.3rem; }
+  .remediation { font-size: 0.8rem; color: #86efac; margin-top: 0.3rem; }
+  .evidence { font-size: 0.78rem; color: #64748b; margin-top: 0.2rem; }
+  .evidence code { background: #0f172a; padding: 1px 4px; border-radius: 3px; font-family: monospace; }
+  .reference a { font-size: 0.78rem; color: #38bdf8; text-decoration: none; }
+  .no-findings { color: #22c55e; font-size: 0.85rem; padding: 0.3rem 0; }
+  .error { color: #f87171; padding: 1rem; background: #1e293b; border-radius: 6px; }
+  footer { text-align: center; color: #334155; font-size: 0.75rem; padding: 2rem 0; border-top: 1px solid #1e293b; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">⚔ SENTINELSCAN</div>
+    <div class="meta">v2.0.0 · Generated 2026-04-18 19:02 UTC</div>
+  </header>
+  <div class="summary-grid">
+            <div class="card" style="border-left: 4px solid #dc2626">
+              <div class="card-count" style="color:#dc2626">4</div>
+              <div class="card-label">Critical</div>
+            </div>
+            <div class="card" style="border-left: 4px solid #ea580c">
+              <div class="card-count" style="color:#ea580c">3</div>
+              <div class="card-label">High</div>
+            </div>
+            <div class="card" style="border-left: 4px solid #d97706">
+              <div class="card-count" style="color:#d97706">8</div>
+              <div class="card-label">Medium</div>
+            </div>
+            <div class="card" style="border-left: 4px solid #2563eb">
+              <div class="card-count" style="color:#2563eb">4</div>
+              <div class="card-label">Low</div>
+            </div>
+            <div class="card" style="border-left: 4px solid #16a34a">
+              <div class="card-count" style="color:#16a34a">4</div>
+              <div class="card-label">Info</div>
+            </div></div>
+  
+            <div class="target-block">
+              <div class="target-header">
+                <div>
+                  <h2 class="target-name">https://www.farabi.university/</h2>
+                  <div class="target-meta">
+                    <span>Status: 200</span>
+                    <span>Score: 324</span>
+                    <span>URL: https://www.farabi.university/</span>
+                  </div>
+                </div>
+                <div class="grade-badge" style="color:#dc2626; border-color:#dc2626">F</div>
+              </div>
+              
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">HEADERS</span>
+                    <span class="module-time">0ms</span>
+                    <span class="module-count">4 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #ea580c">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#ea580c">HIGH</span>
+                                <span class="finding-title">Missing Header: Strict-Transport-Security</span>
+                              </div>
+                              <div class="finding-desc">HSTS header is missing. The site may be downgraded to HTTP.</div>
+                              <div class="remediation">🔧 Add: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload</div><div class="reference"><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank">📖 Reference</a></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #2563eb">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#2563eb">LOW</span>
+                                <span class="finding-title">Missing Header: Referrer-Policy</span>
+                              </div>
+                              <div class="finding-desc">Referrer-Policy is missing. Referrer data may leak to third parties.</div>
+                              <div class="remediation">🔧 Add: Referrer-Policy: strict-origin-when-cross-origin</div><div class="reference"><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy" target="_blank">📖 Reference</a></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #2563eb">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#2563eb">LOW</span>
+                                <span class="finding-title">Missing Header: Permissions-Policy</span>
+                              </div>
+                              <div class="finding-desc">Permissions-Policy (formerly Feature-Policy) is missing.</div>
+                              <div class="remediation">🔧 Add: Permissions-Policy: camera=(), microphone=(), geolocation=()</div><div class="reference"><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy" target="_blank">📖 Reference</a></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #2563eb">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#2563eb">LOW</span>
+                                <span class="finding-title">Information Disclosure: Server</span>
+                              </div>
+                              <div class="finding-desc">Server header reveals web server software and version.</div>
+                              <div class="remediation">🔧 Remove or genericise the Server header in your web server config.</div><div class="evidence">Evidence: <code>Server: Apache/2.4.41 (Ubuntu)</code></div>
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">SSL TLS</span>
+                    <span class="module-time">170ms</span>
+                    <span class="module-count">1 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #dc2626">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#dc2626">CRITICAL</span>
+                                <span class="finding-title">TLS Certificate Verification Failed</span>
+                              </div>
+                              <div class="finding-desc">[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)</div>
+                              <div class="remediation">🔧 Ensure the certificate is signed by a trusted CA and the hostname matches.</div>
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">OWASP</span>
+                    <span class="module-time">19445ms</span>
+                    <span class="module-count">11 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #dc2626">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#dc2626">CRITICAL</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.git/config</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.git/config returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.git/config via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.git/config  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #dc2626">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#dc2626">CRITICAL</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.env</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.env returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.env via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.env  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #dc2626">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#dc2626">CRITICAL</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.env.production</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.env.production returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.env.production via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.env.production  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #ea580c">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#ea580c">HIGH</span>
+                                <span class="finding-title">Sensitive Path accessible: /robots.txt</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /robots.txt returned HTTP 200.</div>
+                              <div class="remediation">🔧 Restrict access to /robots.txt via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/robots.txt  Status: 200</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.env.local</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.env.local returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.env.local via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.env.local  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.htaccess</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.htaccess returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.htaccess via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.htaccess  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /server-status</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /server-status returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /server-status via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/server-status  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /swagger.json</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /swagger.json returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /swagger.json via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/swagger.json  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /openapi.json</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /openapi.json returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /openapi.json via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/openapi.json  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Sensitive Path returned 403: /.DS_Store</span>
+                              </div>
+                              <div class="finding-desc">Sensitive resource at /.DS_Store returned HTTP 403.</div>
+                              <div class="remediation">🔧 Restrict access to /.DS_Store via web server configuration.</div><div class="evidence">Evidence: <code>URL: https://www.farabi.university/.DS_Store  Status: 403</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #2563eb">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#2563eb">LOW</span>
+                                <span class="finding-title">A06 – Server Version Disclosure</span>
+                              </div>
+                              <div class="finding-desc">Server header discloses version: Apache/2.4.41 (Ubuntu)</div>
+                              <div class="remediation">🔧 Remove version information from the Server header.</div><div class="evidence">Evidence: <code>Server: Apache/2.4.41 (Ubuntu)</code></div>
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">COOKIES</span>
+                    <span class="module-time">0ms</span>
+                    <span class="module-count">2 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #ea580c">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#ea580c">HIGH</span>
+                                <span class="finding-title">Cookie Missing Secure Flag: PHPSESSID</span>
+                              </div>
+                              <div class="finding-desc">Cookie &#x27;PHPSESSID&#x27; can be transmitted over HTTP.</div>
+                              <div class="remediation">🔧 Add the Secure flag to cookie &#x27;PHPSESSID&#x27;.</div><div class="evidence">Evidence: <code>Set-Cookie: PHPSESSID=...</code></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">Cookie Missing SameSite Attribute: PHPSESSID</span>
+                              </div>
+                              <div class="finding-desc">Cookie &#x27;PHPSESSID&#x27; has no SameSite attribute (CSRF risk).</div>
+                              <div class="remediation">🔧 Add SameSite=Strict or SameSite=Lax to the cookie.</div><div class="reference"><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite" target="_blank">📖 Reference</a></div>
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">PORTS</span>
+                    <span class="module-time">3013ms</span>
+                    <span class="module-count">2 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #16a34a">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#16a34a">INFO</span>
+                                <span class="finding-title">Port Open: 80/HTTP</span>
+                              </div>
+                              <div class="finding-desc">Port 80 (HTTP) is open.</div>
+                              
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #16a34a">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#16a34a">INFO</span>
+                                <span class="finding-title">Port Open: 443/HTTPS</span>
+                              </div>
+                              <div class="finding-desc">Port 443 (HTTPS) is open.</div>
+                              
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">DNS</span>
+                    <span class="module-time">343ms</span>
+                    <span class="module-count">2 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #d97706">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#d97706">MEDIUM</span>
+                                <span class="finding-title">DMARC Record Missing</span>
+                              </div>
+                              <div class="finding-desc">No DMARC record found. Email spoofing is not protected.</div>
+                              <div class="remediation">🔧 Add a DMARC TXT record at _dmarc.yourdomain.com</div><div class="reference"><a href="https://dmarc.org" target="_blank">📖 Reference</a></div>
+                            </div>
+                            <div class="finding" style="border-left: 3px solid #16a34a">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#16a34a">INFO</span>
+                                <span class="finding-title">DNS Resolution Successful</span>
+                              </div>
+                              <div class="finding-desc">Resolved to 89.218.177.220</div>
+                              
+                            </div></div>
+                </div>
+                <div class="module-block">
+                  <div class="module-header">
+                    <span class="module-name">CORS</span>
+                    <span class="module-time">547ms</span>
+                    <span class="module-count">1 findings</span>
+                  </div>
+                  <div class="module-findings">
+                            <div class="finding" style="border-left: 3px solid #16a34a">
+                              <div class="finding-header">
+                                <span class="badge" style="background:#16a34a">INFO</span>
+                                <span class="finding-title">No CORS Headers</span>
+                              </div>
+                              <div class="finding-desc">No CORS headers found. Cross-origin requests will be blocked by browsers.</div>
+                              
+                            </div></div>
+                </div>
+            </div>
+  <footer>Generated by SentinelScan v2.0.0 · Security audit report · 2026-04-18 19:02 UTC</footer>
+</div>
+</body>
+</html>

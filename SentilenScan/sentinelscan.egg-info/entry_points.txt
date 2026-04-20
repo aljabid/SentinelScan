@@ -1,0 +1,2 @@
+[console_scripts]
+sentinelscan = sentinelscan.cli:main
