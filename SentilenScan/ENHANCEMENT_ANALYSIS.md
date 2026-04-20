@@ -1,5 +1,5 @@
 # SentinelScan – Project Enhancement Analysis
-### From Student Project → Industrial-Grade Security Tool
+### Directed towards an Industrial-Grade Security Tool
 
 ---
 
