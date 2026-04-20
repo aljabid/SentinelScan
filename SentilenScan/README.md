@@ -1,4 +1,4 @@
-# ⚔ SentinelScan
+#  SentinelScan
 
 **Industrial-grade, modular web security scanner built in Python.**
 
