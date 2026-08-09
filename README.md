@@ -1,6 +1,6 @@
 #  SentinelScan
 
-**Industrial-grade, modular web security scanner built in Python.**
+**Web Security Scanner, modular and built in Python.**
 
 SentinelScan scans web targets for misconfigurations, insecure headers, TLS/SSL issues, cookie flaws, CORS vulnerabilities, DNS security gaps, and exposed ports — producing audit-ready reports in Text, JSON, and HTML formats.
 

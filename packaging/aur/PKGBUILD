@@ -2,7 +2,7 @@
 pkgname=sentinelscan
 pkgver=2.0.0
 pkgrel=1
-pkgdesc="Industrial-grade modular web security scanner"
+pkgdesc="Web Security Scanner, modular"
 arch=('any')
 url="https://github.com/aljabid/SentinelScan"
 license=('MIT')

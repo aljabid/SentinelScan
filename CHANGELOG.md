@@ -55,7 +55,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [2.0.0] – Industrial Release
+## [2.0.0] – Web Security Scanner Release
 
 ### Added
 - **CookiesAnalyzer** – per-cookie checks for Secure, HttpOnly, SameSite attributes

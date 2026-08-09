@@ -11,7 +11,7 @@ Package: sentinelscan
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-requests, python3-urllib3
 Recommends: python3-dnspython
-Description: Industrial-grade modular web security scanner
+Description: Web Security Scanner, modular
  SentinelScan scans web targets for misconfigurations, insecure headers,
  TLS/SSL issues, cookie flaws, CORS vulnerabilities, DNS email-security
  gaps, exposed ports (with banner grabbing), passive subdomain enumeration,

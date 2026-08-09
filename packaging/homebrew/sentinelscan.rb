@@ -1,7 +1,7 @@
 class Sentinelscan < Formula
   include Language::Python::Virtualenv
 
-  desc "Industrial-grade modular web security scanner"
+  desc "Web Security Scanner, modular"
   homepage "https://github.com/aljabid/SentinelScan"
   url "https://github.com/aljabid/SentinelScan/archive/refs/tags/v2.0.0.tar.gz"
   # TODO: replace with `shasum -a 256` of the real release tarball once tagged and published.

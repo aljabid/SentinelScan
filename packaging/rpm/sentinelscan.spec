@@ -1,7 +1,7 @@
 Name:           sentinelscan
 Version:        2.0.0
 Release:        1%{?dist}
-Summary:        Industrial-grade modular web security scanner
+Summary:        Web Security Scanner, modular
 
 License:        MIT
 URL:            https://github.com/aljabid/SentinelScan

@@ -9,7 +9,7 @@ README = (HERE / "README.md").read_text(encoding="utf-8") if (HERE / "README.md"
 setup(
     name="sentinelscan",
     version="2.0.0",
-    description="Industrial-grade modular web security scanner",
+    description="Web Security Scanner, modular",
     long_description=README,
     long_description_content_type="text/markdown",
     author="SentinelScan",
