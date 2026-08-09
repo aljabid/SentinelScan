@@ -1,0 +1,47 @@
+#compdef sentinelscan
+# Zsh completion for sentinelscan
+# Install: copy to a directory in $fpath (e.g. /usr/share/zsh/site-functions/_sentinelscan)
+
+_sentinelscan() {
+    local -a modules formats severities timings
+    modules=(headers ssl_tls owasp cookies cors dns ports subdomains crawler cve_fingerprint all)
+    formats=(text json html sarif)
+    severities=(critical high medium low info)
+    timings=(0 1 2 3 4 5)
+
+    _arguments -s \
+        '(-iL --input-list)'{-iL,--input-list}'[read targets from file]:file:_files' \
+        '(-m --modules)'{-m,--modules}'[modules to run]:module:->modules' \
+        '--plugin-dir[custom analyzer plugin directory]:dir:_files -/' \
+        '--no-plugins[disable plugin loading]' \
+        '(-f --format)'{-f,--format}'[output format]:format:->formats' \
+        '(-o --output)'{-o,--output}'[write report to file]:file:_files' \
+        '(-T --timing)'{-T,--timing}'[timing template 0-5]:level:->timings' \
+        '--timeout[request timeout in seconds]:seconds:' \
+        '--retries[connection retries]:count:' \
+        '--crawl-max-pages[max pages for crawler module]:count:' \
+        '--severity[filter by severity]:severity:->severities' \
+        '--user-agent[custom User-Agent string]:agent:' \
+        '(-H --header)'{-H,--header}'[custom HTTP header]:header:' \
+        '--cookie[raw Cookie header]:cookie:' \
+        '--follow-redirects[follow redirects]' \
+        '--no-follow-redirects[do not follow redirects]' \
+        '--no-color[disable colored output]' \
+        '(-v --verbose)'{-v,--verbose}'[verbose output]' \
+        '--version[show version and exit]' \
+        '--exit-on-critical[exit 2 if any critical finding]' \
+        '--score-threshold[exit 2 if risk score exceeds N]:score:' \
+        '--update-db[download latest CVE signature database]' \
+        '--update-url[custom signature database URL]:url:' \
+        '--doctor[run self-diagnosis]' \
+        '*:target:_hosts'
+
+    case "$state" in
+        modules) _values -s , 'module' $modules ;;
+        formats) _values 'format' $formats ;;
+        severities) _values -s , 'severity' $severities ;;
+        timings) _values 'timing' $timings ;;
+    esac
+}
+
+_sentinelscan

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import html as html_lib
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 from sentinelscan import __version__
 
@@ -12,16 +12,19 @@ SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"]
 
 SEVERITY_COLORS = {
     "critical": "#dc2626",
-    "high":     "#ea580c",
-    "medium":   "#d97706",
-    "low":      "#2563eb",
-    "info":     "#16a34a",
+    "high": "#ea580c",
+    "medium": "#d97706",
+    "low": "#2563eb",
+    "info": "#16a34a",
 }
 
 GRADE_COLORS = {
-    "A+": "#16a34a", "A": "#22c55e",
-    "B": "#84cc16", "C": "#eab308",
-    "D": "#f97316", "F": "#dc2626",
+    "A+": "#16a34a",
+    "A": "#22c55e",
+    "B": "#84cc16",
+    "C": "#eab308",
+    "D": "#f97316",
+    "F": "#dc2626",
 }
 
 
@@ -30,10 +33,10 @@ def _esc(text: str) -> str:
 
 
 class HtmlReporter:
-    def __init__(self, severity_filter: List[str] = None, no_color: bool = False) -> None:
+    def __init__(self, severity_filter: list[str] | None = None, no_color: bool = False) -> None:
         self.severity_filter = severity_filter or SEVERITY_ORDER
 
-    def render(self, all_results: Dict[str, Any]) -> str:
+    def render(self, all_results: dict[str, Any]) -> str:
         generated = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         targets_html = ""
 
@@ -77,10 +80,7 @@ class HtmlReporter:
             for mod_name, mod_data in results.items():
                 if mod_name.startswith("__"):
                     continue
-                findings = [
-                    f for f in mod_data.get("findings", [])
-                    if f.get("severity") in self.severity_filter
-                ]
+                findings = [f for f in mod_data.get("findings", []) if f.get("severity") in self.severity_filter]
                 elapsed = mod_data.get("_elapsed_ms", 0)
 
                 findings_html = ""

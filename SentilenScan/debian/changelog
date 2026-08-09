@@ -1,0 +1,26 @@
+sentinelscan (2.0.0) unstable; urgency=medium
+
+  * Concurrent scanning engine: analyzer modules and multiple targets now
+    scan in parallel via thread pools instead of sequentially.
+  * nmap-style timing templates (-T0..-T5) controlling timeout/concurrency.
+  * CIDR range, host-list (-iL), and stdin target input, with a safety cap
+    on CIDR expansion.
+  * New modules: subdomains (crt.sh certificate-transparency enumeration),
+    crawler (multi-page header-consistency check), cve_fingerprint
+    (version detection against a bundled, updatable CVE signature dataset).
+  * Port banner-grabbing on open ports.
+  * Authenticated scanning via -H/--header and --cookie.
+  * External plugin system (--plugin-dir): add custom analyzers with zero
+    source changes.
+  * SARIF 2.1.0 output format for GitHub Code Scanning and CI dashboards.
+  * Config/profile file support (--profile/--profile-file, TOML).
+  * --doctor self-diagnosis command and a first-run authorized-use
+    disclaimer (non-blocking, CI-safe).
+  * Man page and bash/zsh/fish shell completions.
+  * Fixed: `python -m sentinelscan` always exited 0 regardless of scan
+    results; --follow-redirects could never be disabled; ssl_tls ignored
+    non-default ports; several deprecated/fragile stdlib usages replaced.
+  * Test coverage expanded from ~35% to ~90%; ruff/black/mypy clean,
+    enforced in CI.
+
+ -- SentinelScan Contributors <noreply@example.com>  Tue, 04 Aug 2026 20:53:09 -0500

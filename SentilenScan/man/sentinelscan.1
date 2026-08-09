@@ -1,0 +1,214 @@
+.TH SENTINELSCAN 1 "2026-08-04" "SentinelScan 2.0.0" "User Commands"
+.SH NAME
+sentinelscan \- modular web security scanner
+.SH SYNOPSIS
+.B sentinelscan
+[\fITARGET\fR ...] [\fIOPTIONS\fR]
+.br
+.B sentinelscan
+\-iL \fIFILE\fR [\fIOPTIONS\fR]
+.br
+.B sentinelscan
+\-\-doctor | \-\-update\-db | \-\-version
+.SH DESCRIPTION
+.B sentinelscan
+scans one or more web targets for misconfigurations: insecure HTTP headers,
+TLS/SSL issues, cookie flaws, CORS vulnerabilities, DNS email-security gaps,
+exposed ports, subdomain exposure, inconsistent header policy across a site,
+and known-vulnerable software versions. Findings are scored and graded
+(A+ through F) per target, and rendered as text, JSON, HTML, or SARIF.
+.PP
+Targets may be hostnames, URLs, CIDR ranges (expanded to individual hosts,
+capped at 1024 per range), a host-list file (\fB\-iL\fR), or standard input
+(pass \fB\-\fR as a target).
+.SH OPTIONS
+.SS Target Selection
+.TP
+.BI TARGET " ..."
+Hostname, URL, or CIDR range to scan. Pass \fB\-\fR to read newline-separated
+targets from stdin. May be repeated.
+.TP
+.BR \-iL ", " \-\-input\-list " " \fIFILE\fR
+Read targets from \fIFILE\fR, one per line. Lines starting with \fB#\fR are
+ignored. CIDR ranges are accepted.
+.SS Module Selection
+.TP
+.BR \-m ", " \-\-modules " " \fIMODULE\fR " [\fIMODULE\fR ...]"
+Modules to run. Built-in:
+.BR headers ", " ssl_tls ", " owasp ", " cookies ", " cors ", " dns ", "
+.BR ports ", " subdomains ", " crawler ", " cve_fingerprint ", or " all
+(default). Plugin modules (see \fB\-\-plugin\-dir\fR) are also selectable by
+name once loaded.
+.TP
+.BR \-\-plugin\-dir " " \fIDIR\fR
+Directory to load custom analyzer plugins from. Default:
+\fI~/.config/sentinelscan/plugins\fR. See \fBPLUGINS\fR below.
+.TP
+.B \-\-no\-plugins
+Disable plugin loading entirely for this run.
+.SS Output
+.TP
+.BR \-f ", " \-\-format " " {text,json,html,sarif}
+Output format. Default: \fBtext\fR. \fBsarif\fR emits SARIF 2.1.0 for GitHub
+Code Scanning and similar tool-chains.
+.TP
+.BR \-o ", " \-\-output " " \fIFILE\fR
+Write the report to \fIFILE\fR instead of stdout. Status/progress messages
+always go to stderr regardless of this flag, so stdout stays clean for
+piping when \fB\-o\fR is not used.
+.TP
+.BI \-\-severity " " LEVEL " [\fILEVEL\fR ...]"
+Restrict output to the given severity levels:
+.BR critical ", " high ", " medium ", " low ", " info .
+Default: all.
+.SS Timing & Concurrency
+.TP
+.BR \-T ", " \-\-timing " " {0..5}
+nmap-style timing template controlling default timeout and concurrency:
+\fB0\fR paranoid (slowest, most polite) through \fB5\fR insane (fastest,
+most parallel). Default: \fB3\fR (normal).
+.TP
+.BI \-\-timeout " " SECONDS
+Per-request timeout. Overrides the timing template's default (normally 10s)
+without changing its concurrency.
+.TP
+.BI \-\-retries " " N
+Retries on connection failure. Default: 2.
+.TP
+.BI \-\-crawl\-max\-pages " " N
+Maximum pages the \fBcrawler\fR module visits. Default: 15.
+.SS Authenticated Scanning
+.TP
+.BI \-H ", " \-\-header " " "'Name: Value'"
+Add a custom HTTP header. May be repeated. Example:
+\fB\-H 'Authorization: Bearer TOKEN'\fR.
+.TP
+.BI \-\-cookie " " "'name=value; ...'"
+Raw \fBCookie\fR header, for scanning behind an authenticated session.
+.SS Network
+.TP
+.BI \-\-user\-agent " " STRING
+Custom User-Agent string. Default: \fBSentinelScan/2.0 (Security Scanner)\fR.
+.TP
+.BR \-\-follow\-redirects ", " \-\-no\-follow\-redirects
+Follow HTTP redirects. Default: follow.
+.SS CI/CD Gates
+.TP
+.B \-\-exit\-on\-critical
+Exit with code 2 if any Critical-severity finding is present.
+.TP
+.BI \-\-score\-threshold " " SCORE
+Exit with code 2 if the cumulative risk score exceeds \fISCORE\fR.
+.SS Display
+.TP
+.B \-\-no\-color
+Disable ANSI color in text output.
+.TP
+.BR \-v ", " \-\-verbose
+Verbose/debug output (also surfaces previously-silent internal probe
+failures at debug level).
+.SS Diagnostics & Maintenance
+.TP
+.B \-\-doctor
+Report Python version, optional dependency availability (e.g. dnspython),
+and config paths; exit 1 if anything needed is missing.
+.TP
+.B \-\-update\-db
+Download the latest CVE signature dataset and install it as a user-level
+override.
+.TP
+.BI \-\-update\-url " " URL
+Custom source URL for \fB\-\-update\-db\fR (advanced).
+.TP
+.B \-\-version
+Print the version and exit.
+.SH EXIT STATUS
+.TP
+.B 0
+Scan completed; no CI/CD gate tripped (or \fB\-\-doctor\fR/\fB\-\-update\-db\fR succeeded).
+.TP
+.B 1
+Usage or runtime error (bad target/CIDR, malformed \fB\-H\fR header, unknown
+module, network failure). The scan did not complete.
+.TP
+.B 2
+Scan completed successfully, but \fB\-\-exit\-on\-critical\fR and/or
+\fB\-\-score\-threshold\fR tripped.
+.SH PLUGINS
+Drop a \fB*.py\fR file into the plugin directory exposing a module-level
+\fBANALYZER\fR attribute (a \fBBaseAnalyzer\fR subclass with a unique
+\fBname\fR) to add a custom check with no source changes. See
+.B CONFIG.md
+in the project documentation for the full interface.
+.SH FILES
+.TP
+.I ~/.config/sentinelscan/plugins/
+Default plugin directory.
+.TP
+.I ~/.config/sentinelscan/cve_signatures.json
+User-level CVE signature override, installed by \fB\-\-update\-db\fR.
+.TP
+.I ~/.config/sentinelscan/.disclaimer_shown
+Marker file recording that the first-run authorized-use disclaimer has been shown.
+.SH ENVIRONMENT
+.TP
+.B SENTINELSCAN_SKIP_DISCLAIMER
+Set to \fB1\fR to suppress the first-run disclaimer (e.g. in CI).
+.TP
+.B SENTINELSCAN_PLUGIN_DIR
+Overrides the default plugin directory.
+.TP
+.B SENTINELSCAN_SIGNATURES_PATH
+Overrides the default CVE signature override path.
+.TP
+.B SENTINELSCAN_CONFIG_DIR
+Overrides the default config directory used for the disclaimer marker.
+.SH EXAMPLES
+.PP
+Basic scan, all modules, text output:
+.RS
+.EX
+sentinelscan example.com
+.EE
+.RE
+.PP
+Specific modules, JSON to a file:
+.RS
+.EX
+sentinelscan example.com \-m headers ssl_tls \-f json \-o results.json
+.EE
+.RE
+.PP
+CIDR range, aggressive timing, ports only:
+.RS
+.EX
+sentinelscan 10.0.0.0/28 \-m ports \-\-timing 4
+.EE
+.RE
+.PP
+Authenticated scan, CI/CD gate:
+.RS
+.EX
+sentinelscan example.com \-H 'Authorization: Bearer TOKEN' \-\-exit\-on\-critical
+.EE
+.RE
+.SH LEGAL
+.B sentinelscan
+performs active probes (port connections, path enumeration, CORS/header
+requests) against the target(s) given to it. Only scan systems you own or
+have explicit written authorization to test. Unauthorized scanning may
+violate computer-crime laws and the target's terms of service.
+.PP
+sentinelscan sends no telemetry. It contacts only: the scan target(s), crt.sh
+(only when the
+.B subdomains
+module runs), and the URL given to
+.B \-\-update\-url
+(only when
+.B \-\-update\-db
+is used).
+.SH AUTHOR
+SentinelScan Contributors.
+.SH SEE ALSO
+Full documentation: \fBREADME.md\fR, \fBUSAGE.md\fR, \fBCONFIG.md\fR,
+\fBSECURITY.md\fR in the project source.

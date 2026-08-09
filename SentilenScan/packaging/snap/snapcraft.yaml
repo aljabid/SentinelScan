@@ -1,0 +1,32 @@
+name: sentinelscan
+version: '2.0.0'
+summary: Industrial-grade modular web security scanner
+description: |
+  SentinelScan scans web targets for misconfigurations, insecure headers,
+  TLS/SSL issues, cookie flaws, CORS vulnerabilities, DNS email-security
+  gaps, exposed ports (with banner grabbing), passive subdomain enumeration,
+  multi-page header-consistency crawling, and known-vulnerable software
+  version fingerprinting. Reports render as text, JSON, HTML, or SARIF.
+  Supports an external plugin system, CI/CD exit-code gating, and
+  nmap-style timing templates.
+
+base: core22
+confinement: strict
+grade: stable
+license: MIT
+
+apps:
+  sentinelscan:
+    command: bin/sentinelscan
+    plugs:
+      - network
+      - home
+
+parts:
+  sentinelscan:
+    plugin: python
+    source: .
+    python-packages:
+      - .
+    stage-packages:
+      - ca-certificates

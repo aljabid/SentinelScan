@@ -2,28 +2,32 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 SEVERITY_COLORS = {
-    "critical": "\033[1;31m",   # Bold Red
-    "high":     "\033[31m",     # Red
-    "medium":   "\033[33m",     # Yellow
-    "low":      "\033[36m",     # Cyan
-    "info":     "\033[32m",     # Green
+    "critical": "\033[1;31m",  # Bold Red
+    "high": "\033[31m",  # Red
+    "medium": "\033[33m",  # Yellow
+    "low": "\033[36m",  # Cyan
+    "info": "\033[32m",  # Green
 }
 RESET = "\033[0m"
-BOLD  = "\033[1m"
+BOLD = "\033[1m"
 
 GRADE_COLORS = {
-    "A+": "\033[1;32m", "A": "\033[32m", "B": "\033[33m",
-    "C": "\033[33m", "D": "\033[31m", "F": "\033[1;31m",
+    "A+": "\033[1;32m",
+    "A": "\033[32m",
+    "B": "\033[33m",
+    "C": "\033[33m",
+    "D": "\033[31m",
+    "F": "\033[1;31m",
 }
 
 SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"]
 
 
 class TextReporter:
-    def __init__(self, severity_filter: List[str] = None, no_color: bool = False) -> None:
+    def __init__(self, severity_filter: list[str] | None = None, no_color: bool = False) -> None:
         self.severity_filter = severity_filter or SEVERITY_ORDER
         self.no_color = no_color
 
@@ -36,7 +40,7 @@ class TextReporter:
         label = f"[{severity.upper():8}]"
         return self._c(SEVERITY_COLORS.get(severity, ""), label)
 
-    def render(self, all_results: Dict[str, Any]) -> str:
+    def render(self, all_results: dict[str, Any]) -> str:
         lines = []
 
         for target, results in all_results.items():
@@ -65,7 +69,7 @@ class TextReporter:
                 findings = mod_data.get("findings", [])
                 elapsed = mod_data.get("_elapsed_ms", 0)
                 filtered = [f for f in findings if f.get("severity") in self.severity_filter]
-                
+
                 lines.append(self._c(BOLD, f"  ┌─ {module_name.upper()} ({elapsed}ms) ─"))
 
                 if mod_data.get("error"):
@@ -95,7 +99,8 @@ class TextReporter:
         for target, results in all_results.items():
             meta = results.get("__meta__", {})
             all_findings = [
-                f for mod_name, mod_data in results.items()
+                f
+                for mod_name, mod_data in results.items()
                 if not mod_name.startswith("__")
                 for f in mod_data.get("findings", [])
             ]

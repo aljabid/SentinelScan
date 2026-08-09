@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from sentinelscan.analyzers.base import BaseAnalyzer
 
@@ -11,7 +11,7 @@ REQUIRED_HEADERS = {
         "severity": "high",
         "description": "CSP header is missing. Without it, the site is vulnerable to XSS attacks.",
         "remediation": "Add a strict Content-Security-Policy header. Start with: "
-                       "Content-Security-Policy: default-src 'self'",
+        "Content-Security-Policy: default-src 'self'",
         "reference": "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP",
     },
     "X-Frame-Options": {
@@ -70,7 +70,7 @@ WEAK_CSP_DIRECTIVES = ["unsafe-inline", "unsafe-eval", "*", "data:"]
 class HeadersAnalyzer(BaseAnalyzer):
     name = "headers"
 
-    def analyze(self) -> Dict[str, Any]:
+    def analyze(self) -> dict[str, Any]:
         if self.response is None:
             return {"error": "No HTTP response available"}
 

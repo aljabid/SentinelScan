@@ -1,0 +1,28 @@
+# Maintainer: SentinelScan Contributors
+pkgname=sentinelscan
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="Industrial-grade modular web security scanner"
+arch=('any')
+url="https://github.com/aljabid/SentinelScan"
+license=('MIT')
+depends=('python' 'python-requests' 'python-urllib3')
+optdepends=('python-dnspython: enhanced DNS checks (SPF/DMARC)')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/aljabid/SentinelScan/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 man/sentinelscan.1 "$pkgdir/usr/share/man/man1/sentinelscan.1"
+    install -Dm644 completions/sentinelscan.bash "$pkgdir/usr/share/bash-completion/completions/sentinelscan"
+    install -Dm644 completions/_sentinelscan "$pkgdir/usr/share/zsh/site-functions/_sentinelscan"
+    install -Dm644 completions/sentinelscan.fish "$pkgdir/usr/share/fish/vendor_completions.d/sentinelscan.fish"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

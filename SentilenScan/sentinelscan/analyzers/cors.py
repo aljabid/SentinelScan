@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from sentinelscan.analyzers.base import BaseAnalyzer
 
@@ -10,11 +10,11 @@ from sentinelscan.analyzers.base import BaseAnalyzer
 class CorsAnalyzer(BaseAnalyzer):
     name = "cors"
 
-    def analyze(self) -> Dict[str, Any]:
+    def analyze(self) -> dict[str, Any]:
         if self.session is None:
             return {"error": "No session available"}
 
-        cors_meta: Dict[str, Any] = {}
+        cors_meta: dict[str, Any] = {}
 
         # Test 1: Wildcard origin
         try:
@@ -85,11 +85,14 @@ class CorsAnalyzer(BaseAnalyzer):
             if acao2 == "null":
                 self.add_finding(
                     title="CORS: Null Origin Allowed",
-                    description="Server accepts 'null' as an allowed origin. Attackers can exploit this via sandboxed iframes.",
+                    description=(
+                        "Server accepts 'null' as an allowed origin. "
+                        "Attackers can exploit this via sandboxed iframes."
+                    ),
                     severity="medium",
                     remediation="Remove 'null' from the CORS origin allowlist.",
                 )
-        except Exception:
-            pass
+        except Exception as exc:
+            self.log.debug("Null-origin CORS probe failed: %s", exc)
 
         return cors_meta

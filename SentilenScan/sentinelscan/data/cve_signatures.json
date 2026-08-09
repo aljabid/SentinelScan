@@ -1,0 +1,54 @@
+{
+  "nginx": [
+    {
+      "max_version": "1.20.0",
+      "cve": "CVE-2021-23017",
+      "severity": "critical",
+      "description": "DNS resolver off-by-one heap write, potentially exploitable for RCE."
+    },
+    {
+      "max_version": "1.16.1",
+      "cve": "CVE-2019-9511",
+      "severity": "high",
+      "description": "HTTP/2 'Data Dribble' denial-of-service."
+    }
+  ],
+  "apache": [
+    {
+      "max_version": "2.4.49",
+      "cve": "CVE-2021-41773",
+      "severity": "critical",
+      "description": "Path traversal and remote code execution in mod_cgi."
+    },
+    {
+      "max_version": "2.4.51",
+      "cve": "CVE-2021-42013",
+      "severity": "critical",
+      "description": "Path traversal / RCE — incomplete fix for CVE-2021-41773."
+    }
+  ],
+  "openssh": [
+    {
+      "max_version": "7.7",
+      "cve": "CVE-2018-15473",
+      "severity": "medium",
+      "description": "Username enumeration via crafted authentication packets."
+    }
+  ],
+  "php": [
+    {
+      "max_version": "7.4.0",
+      "cve": "CVE-2019-11043",
+      "severity": "critical",
+      "description": "PHP-FPM remote code execution via crafted Nginx path/env handling."
+    }
+  ],
+  "iis": [
+    {
+      "max_version": "10.0",
+      "cve": "CVE-2017-7269",
+      "severity": "critical",
+      "description": "IIS 6.0 WebDAV buffer overflow RCE (ScStoragePathFromUrl)."
+    }
+  ]
+}

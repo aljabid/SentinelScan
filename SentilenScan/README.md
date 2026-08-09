@@ -16,7 +16,10 @@ SentinelScan scans web targets for misconfigurations, insecure headers, TLS/SSL 
 | `cookies` | Secure flag, HttpOnly flag, SameSite attribute per-cookie |
 | `cors` | Wildcard origin, origin reflection, null-origin, credentials misconfiguration |
 | `dns` | SPF, DMARC, MX records, DNS resolution |
-| `ports` | 16 common ports — flags risky services (Telnet, RDP, Redis, MongoDB, etc.) |
+| `ports` | 16 common ports — flags risky services (Telnet, RDP, Redis, MongoDB, etc.), grabs banners |
+| `subdomains` | Passive subdomain enumeration via certificate transparency logs (crt.sh) |
+| `crawler` | Crawls same-origin pages, flags inconsistent security headers across the site |
+| `cve_fingerprint` | Detects product/version from response headers, checks against a bundled CVE signature dataset |
 
 **Risk scoring** assigns a numeric score and letter grade (A+ → F) per target — useful for tracking posture over time.
 
@@ -28,7 +31,7 @@ SentinelScan scans web targets for misconfigurations, insecure headers, TLS/SSL 
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/sentinelscan.git
+git clone https://github.com/aljabid/SentinelScan.git
 cd sentinelscan
 
 # Install (editable / development)
@@ -72,6 +75,16 @@ sentinelscan example.com -m all --severity critical high
 
 # Custom timeout and retries (useful for slow targets)
 sentinelscan example.com --timeout 20 --retries 3
+
+# CIDR range / host-list / stdin input
+sentinelscan 10.0.0.0/28 -m ports --timing 4
+sentinelscan -iL targets.txt -m all -f json
+
+# Authenticated scanning
+sentinelscan example.com -H "Authorization: Bearer TOKEN" --cookie "session=abc123"
+
+# SARIF output for GitHub Code Scanning / CI dashboards
+sentinelscan example.com -f sarif -o results.sarif
 ```
 
 ---
@@ -83,6 +96,9 @@ Color-coded terminal output with severity badges, remediation advice, and a summ
 
 ### JSON
 Structured output with full findings, metadata, timing, and summary counts — suitable for SIEM ingestion, dashboards, or CI/CD pipelines.
+
+### SARIF
+SARIF 2.1.0 output for GitHub Code Scanning and other tool-chain integrations that consume the standard.
 
 ### HTML
 A professional dark-themed audit report with:
@@ -112,8 +128,10 @@ Scores are calculated from finding severities: Critical=40, High=20, Medium=10, 
 
 ```
 sentinelscan/
-├── cli.py              # Argument parsing & entry point
-├── scanner.py          # Orchestrator – dispatches analyzers
+├── cli.py              # Argument parsing, entry point, concurrency orchestration
+├── scanner.py          # Dispatches analyzers concurrently, risk scoring
+├── plugins.py           # Loads external analyzer plugins (no source edits needed)
+├── config_file.py       # TOML profile loading (--profile / --profile-file)
 ├── analyzers/
 │   ├── base.py         # BaseAnalyzer + Finding dataclass
 │   ├── headers.py      # HTTP security headers
@@ -122,17 +140,23 @@ sentinelscan/
 │   ├── cookies.py      # Cookie security flags
 │   ├── cors.py         # CORS policy analysis
 │   ├── dns.py          # SPF, DMARC, DNS records
-│   └── ports.py        # Concurrent port scanning
+│   ├── ports.py        # Concurrent port scanning + banner grabbing
+│   ├── subdomains.py   # Passive subdomain enumeration (crt.sh)
+│   ├── crawler.py      # Multi-page crawl, header-consistency check
+│   └── cve_fingerprint.py  # Version detection + bundled CVE signatures
+├── data/
+│   └── cve_signatures.json  # Bundled CVE dataset, refreshable via --update-db
+├── updater.py           # Downloads a fresh signature dataset (--update-db)
 └── reporters/
     ├── text_reporter.py
     ├── json_reporter.py
+    ├── sarif_reporter.py
     └── html_reporter.py
 ```
 
-Adding a new analyzer requires only:
-1. Create `sentinelscan/analyzers/mycheck.py` inheriting `BaseAnalyzer`
-2. Implement `analyze()` — call `self.add_finding()` for each issue
-3. Register it in `scanner.py` MODULE_MAP and `cli.py` ALL_MODULES
+Two ways to add a check:
+1. **Built-in analyzer** (to contribute upstream): create `sentinelscan/analyzers/mycheck.py` inheriting `BaseAnalyzer`, implement `analyze()`, register in `scanner.py`'s `MODULE_MAP`
+2. **Plugin** (local/team-specific, no source changes): drop a `.py` file exposing an `ANALYZER` attribute into `~/.config/sentinelscan/plugins/` — see [CONFIG.md](CONFIG.md#plugins-no-source-changes-required)
 
 ---
 
@@ -179,6 +203,32 @@ pytest tests/ -v --cov=sentinelscan --cov-report=term-missing
 | CI/CD gates | ✅ | ❌ |
 | Risk grading | ✅ | ❌ |
 | Python extensible | ✅ | NSE (Lua) |
+
+---
+
+## Responsible Use
+
+SentinelScan performs **active** probes against the targets you specify:
+port connections, path enumeration, CORS/header requests. **Only scan
+systems you own or have explicit written authorization to test.**
+Unauthorized scanning may violate computer-crime laws (e.g. the US CFAA) and
+the target's terms of service. The CLI prints a one-time reminder of this on
+first run (see `SECURITY.md` for what's in and out of scope for this policy,
+and `SENTINELSCAN_SKIP_DISCLAIMER=1` to suppress it in CI once you've read it).
+
+**No telemetry.** SentinelScan does not phone home, does not collect
+analytics, and does not send data anywhere except: the target(s) you
+specify, `crt.sh` (only if you run the `subdomains` module), and the
+configured signature-database URL (only if you explicitly run
+`--update-db`). Nothing about your usage, targets, or findings is ever sent
+to the SentinelScan project itself. Verify this yourself — it's ~2,000 lines
+of Python with no analytics library imported anywhere in `install_requires`.
+
+**Safe by default.** The default timing template (`-T3`, "normal") uses
+moderate concurrency and a 10-second timeout — not the fastest the tool can
+go. Faster, noisier scanning (`-T4`/`-T5`) is opt-in, not the default,
+specifically so a first-time `sentinelscan example.com` doesn't come across
+as aggressive probing against a target that didn't expect it.
 
 ---
 

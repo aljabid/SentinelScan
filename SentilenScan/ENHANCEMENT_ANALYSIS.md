@@ -1,5 +1,5 @@
 # SentinelScan – Project Enhancement Analysis
-### Directed towards an Industrial-Grade Security Tool
+### Directed towards a Web Security Scanner
 
 ---
 

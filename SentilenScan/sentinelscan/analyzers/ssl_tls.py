@@ -5,13 +5,25 @@ from __future__ import annotations
 import datetime
 import socket
 import ssl
-from typing import Any, Dict
+from typing import Any, cast
+from urllib.parse import urlsplit
 
 from sentinelscan.analyzers.base import BaseAnalyzer
 
 WEAK_CIPHERS = [
-    "RC4", "DES", "3DES", "MD5", "EXPORT", "NULL", "ANON",
-    "ADH", "AECDH", "aNULL", "eNULL", "LOW", "EXP",
+    "RC4",
+    "DES",
+    "3DES",
+    "MD5",
+    "EXPORT",
+    "NULL",
+    "ANON",
+    "ADH",
+    "AECDH",
+    "aNULL",
+    "eNULL",
+    "LOW",
+    "EXP",
 ]
 
 WEAK_PROTOCOLS = ["SSLv2", "SSLv3", "TLSv1", "TLSv1.1"]
@@ -20,11 +32,12 @@ WEAK_PROTOCOLS = ["SSLv2", "SSLv3", "TLSv1", "TLSv1.1"]
 class SslTlsAnalyzer(BaseAnalyzer):
     name = "ssl_tls"
 
-    def analyze(self) -> Dict[str, Any]:
-        target = self.target.replace("https://", "").replace("http://", "").split("/")[0]
-        port = 443
+    def analyze(self) -> dict[str, Any]:
+        parsed = urlsplit(self.url)
+        target = parsed.hostname or self.target.replace("https://", "").replace("http://", "").split("/")[0]
+        port = parsed.port or 443
 
-        meta: Dict[str, Any] = {
+        meta: dict[str, Any] = {
             "tls_enabled": False,
             "certificate": {},
             "cipher": {},
@@ -47,21 +60,22 @@ class SslTlsAnalyzer(BaseAnalyzer):
 
                     cert = ssock.getpeercert()
                     if cert:
-                        not_after_str = cert.get("notAfter", "")
-                        not_before_str = cert.get("notBefore", "")
+                        not_after_str = str(cert.get("notAfter", ""))
+                        not_before_str = str(cert.get("notBefore", ""))
 
                         try:
                             not_after = ssl.cert_time_to_seconds(not_after_str)
-                            not_before = ssl.cert_time_to_seconds(not_before_str)
-                            expiry_dt = datetime.datetime.utcfromtimestamp(not_after)
-                            days_left = (expiry_dt - datetime.datetime.utcnow()).days
+                            expiry_dt = datetime.datetime.fromtimestamp(not_after, tz=datetime.timezone.utc)
+                            days_left = (expiry_dt - datetime.datetime.now(datetime.timezone.utc)).days
                         except Exception:
                             days_left = None
                             expiry_dt = None
 
-                        subject = dict(x[0] for x in cert.get("subject", []))
-                        issuer = dict(x[0] for x in cert.get("issuer", []))
-                        san = cert.get("subjectAltName", [])
+                        subject_pairs = cast("tuple[tuple[tuple[str, str], ...], ...]", cert.get("subject", ()))
+                        issuer_pairs = cast("tuple[tuple[tuple[str, str], ...], ...]", cert.get("issuer", ()))
+                        subject = dict(x[0] for x in subject_pairs)
+                        issuer = dict(x[0] for x in issuer_pairs)
+                        san: list[Any] = list(cert.get("subjectAltName", []))
 
                         meta["certificate"] = {
                             "subject": subject.get("commonName", "unknown"),
@@ -152,7 +166,7 @@ class SslTlsAnalyzer(BaseAnalyzer):
                         )
                     else:
                         self.add_finding(
-                            title=f"Strong Cipher Suite",
+                            title="Strong Cipher Suite",
                             description=f"Cipher: {cipher_name} ({bits}-bit)",
                             severity="info",
                         )

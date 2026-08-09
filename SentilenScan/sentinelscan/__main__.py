@@ -1,6 +1,8 @@
-"""SentinelScan – Industrial-Grade Web Security Scanner."""
+"""SentinelScan – Web Security Scanner."""
+
+import sys
 
 from sentinelscan.cli import main
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

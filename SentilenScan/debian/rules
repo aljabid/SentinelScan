@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=sentinelscan
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+# dh_install's bare .install-file mappings don't rename files (they nest the
+# source into a directory named after the destination instead), which breaks
+# bash-completion's exact-filename lookup convention. Install these explicitly
+# instead, matching the same pattern used by the RPM/AUR/Homebrew packaging.
+override_dh_install:
+	dh_install
+	install -Dm644 completions/sentinelscan.bash debian/sentinelscan/usr/share/bash-completion/completions/sentinelscan
+	install -Dm644 completions/_sentinelscan debian/sentinelscan/usr/share/zsh/site-functions/_sentinelscan
+	install -Dm644 completions/sentinelscan.fish debian/sentinelscan/usr/share/fish/vendor_completions.d/sentinelscan.fish

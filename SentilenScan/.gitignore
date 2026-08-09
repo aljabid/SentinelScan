@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+.idea/
+
+# Debian package build artifacts (debian/control, rules, changelog etc. are source, keep those)
+.pybuild/
+debian/.debhelper/
+debian/sentinelscan/
+debian/debhelper-build-stamp
+debian/files
+debian/*.debhelper.log
+debian/*.debhelper
+debian/*.substvars
+*.deb
+*.buildinfo
+*.changes

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import urljoin
 
 from sentinelscan.analyzers.base import BaseAnalyzer
@@ -25,8 +25,6 @@ SENSITIVE_PATHS = [
     "/openapi.json",
     "/.DS_Store",
     "/crossdomain.xml",
-    "/sitemap.xml",
-    "/robots.txt",
 ]
 
 ERROR_PATTERNS = [
@@ -41,7 +39,7 @@ ERROR_PATTERNS = [
 class OwaspAnalyzer(BaseAnalyzer):
     name = "owasp"
 
-    def analyze(self) -> Dict[str, Any]:
+    def analyze(self) -> dict[str, Any]:
         if self.response is None:
             return {"error": "No HTTP response available"}
 
@@ -74,8 +72,8 @@ class OwaspAnalyzer(BaseAnalyzer):
                             remediation=f"Restrict access to {path} via web server configuration.",
                             evidence=f"URL: {test_url}  Status: {r.status_code}",
                         )
-            except Exception:
-                pass
+            except Exception as exc:
+                self.log.debug("Probe failed for %s: %s", test_url, exc)
 
         # A03 – Injection: error message patterns in response body
         for pattern, name in ERROR_PATTERNS:
@@ -99,8 +97,8 @@ class OwaspAnalyzer(BaseAnalyzer):
                     severity="high",
                     remediation="Disable directory listing in your web server configuration.",
                 )
-        except Exception:
-            pass
+        except Exception as exc:
+            self.log.debug("Directory listing probe failed: %s", exc)
 
         # A06 – Vulnerable and Outdated Components: check server/powered-by headers
         headers = {k.lower(): v for k, v in self.response.headers.items()}

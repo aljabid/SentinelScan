@@ -1,0 +1,22 @@
+Source: sentinelscan
+Section: net
+Priority: optional
+Maintainer: SentinelScan Contributors <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools
+Standards-Version: 4.6.2
+Homepage: https://github.com/aljabid/SentinelScan
+Rules-Requires-Root: no
+
+Package: sentinelscan
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, python3-requests, python3-urllib3
+Recommends: python3-dnspython
+Description: Industrial-grade modular web security scanner
+ SentinelScan scans web targets for misconfigurations, insecure headers,
+ TLS/SSL issues, cookie flaws, CORS vulnerabilities, DNS email-security
+ gaps, exposed ports (with banner grabbing), passive subdomain enumeration,
+ multi-page header-consistency crawling, and known-vulnerable software
+ version fingerprinting.
+ .
+ Supports an external plugin system, CI/CD exit-code gating, nmap-style
+ timing templates, and text/JSON/HTML/SARIF report output.
