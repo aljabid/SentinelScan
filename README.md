@@ -101,7 +101,7 @@ Structured output with full findings, metadata, timing, and summary counts — s
 SARIF 2.1.0 output for GitHub Code Scanning and other tool-chain integrations that consume the standard.
 
 ### HTML
-A professional dark-themed audit report with:
+A professional dark-themed audit and report with:
 - Summary cards (findings by severity)
 - Per-target risk grade and score
 - Per-module findings with remediation and references
